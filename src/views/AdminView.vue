@@ -15,7 +15,7 @@
 
     <!-- 主体 -->
     <div class="admin-body">
-      <!-- 发布表单 -->
+      <!-- 发布文章卡片 -->
       <el-card class="publish-card">
         <template #header>
           <span>发布新文章</span>
@@ -73,6 +73,67 @@
         </el-form>
       </el-card>
 
+      <!-- ====== 编辑对话框 ====== -->
+      <el-dialog
+        v-model="editDialogVisible"
+        title="编辑文章"
+        width="800px"
+        destroy-on-close
+      >
+        <el-form
+          :model="editForm"
+          :rules="rules"
+          ref="editFormRef"
+          label-width="80px"
+        >
+          <el-form-item label="标题" prop="title">
+            <el-input v-model="editForm.title" placeholder="请输入文章标题" />
+          </el-form-item>
+
+          <el-form-item label="分类" prop="category">
+            <el-input v-model="editForm.category" placeholder="请输入分类" />
+          </el-form-item>
+
+          <el-form-item label="摘要" prop="summary">
+            <el-input
+              v-model="editForm.summary"
+              type="textarea"
+              :rows="2"
+              placeholder="请输入文章摘要"
+            />
+          </el-form-item>
+
+          <el-form-item label="内容" prop="content">
+            <div style="border: 1px solid #dcdfe6; border-radius: 4px">
+              <Toolbar
+                :editor="editEditorRef"
+                :defaultConfig="toolbarConfig"
+                mode="simple"
+                style="border-bottom: 1px solid #dcdfe6"
+              />
+              <Editor
+                v-model="editForm.content"
+                :defaultConfig="editorConfig"
+                mode="simple"
+                style="height: 300px; overflow-y: hidden"
+                @onCreated="handleEditEditorCreated"
+              />
+            </div>
+          </el-form-item>
+        </el-form>
+
+        <template #footer>
+          <el-button @click="editDialogVisible = false">取消</el-button>
+          <el-button
+            type="primary"
+            :loading="editSubmitting"
+            @click="handleUpdate"
+          >
+            保存修改
+          </el-button>
+        </template>
+      </el-dialog>
+
       <!-- 已发布文章列表 -->
       <el-card class="article-list-card" style="margin-top: 24px">
         <template #header>
@@ -90,6 +151,24 @@
               {{ formatDate(row.createTime) }}
             </template>
           </el-table-column>
+          <el-table-column label="操作" width="180" fixed="right">
+            <template #default="{ row }">
+              <el-button
+                type="primary"
+                size="small"
+                @click="openEditDialog(row)"
+              >
+                编辑
+              </el-button>
+              <el-button
+                type="danger"
+                size="small"
+                @click="handleDelete(row.id)"
+              >
+                删除
+              </el-button>
+            </template>
+          </el-table-column>
         </el-table>
       </el-card>
     </div>
@@ -99,23 +178,40 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import "@wangeditor/editor/dist/css/style.css";
-import { publishArticle, getArticleList } from "../api/article";
+import {
+  publishArticle,
+  getArticleList,
+  updateArticle,
+  deleteArticle,
+} from "../api/article";
 
 const router = useRouter();
 const formRef = ref(null);
+const editFormRef = ref(null);
 const submitting = ref(false);
+const editSubmitting = ref(false);
 const tableLoading = ref(false);
 const articles = ref([]);
+const editDialogVisible = ref(false);
+const currentArticleId = ref(null);
 
 // 用户信息
 const username = localStorage.getItem("username") || "";
 const nickname = localStorage.getItem("nickname") || username;
 
-// 表单数据
+// 发布表单
 const form = reactive({
+  title: "",
+  category: "",
+  summary: "",
+  content: "",
+});
+
+// 编辑表单
+const editForm = reactive({
   title: "",
   category: "",
   summary: "",
@@ -134,12 +230,17 @@ const editorConfig = {
   placeholder: "请输入文章内容...",
 };
 const editorRef = ref(null);
+const editEditorRef = ref(null);
 
 const handleEditorCreated = (editor) => {
   editorRef.value = editor;
 };
 
-// 发布文章
+const handleEditEditorCreated = (editor) => {
+  editEditorRef.value = editor;
+};
+
+// ====== 发布文章 ======
 const handlePublish = async () => {
   if (!formRef.value) return;
 
@@ -160,7 +261,7 @@ const handlePublish = async () => {
   });
 };
 
-// 重置表单
+// 重置发布表单
 const resetForm = () => {
   form.title = "";
   form.category = "";
@@ -171,7 +272,7 @@ const resetForm = () => {
   }
 };
 
-// 获取已发布文章列表
+// ====== 获取文章列表 ======
 const fetchArticles = async () => {
   tableLoading.value = true;
   try {
@@ -183,7 +284,58 @@ const fetchArticles = async () => {
   }
 };
 
-// 退出登录
+// ====== 编辑文章 ======
+const openEditDialog = (row) => {
+  currentArticleId.value = row.id;
+  editForm.title = row.title;
+  editForm.category = row.category || "";
+  editForm.summary = row.summary || "";
+  editForm.content = row.content;
+  editDialogVisible.value = true;
+};
+
+const handleUpdate = async () => {
+  if (!editFormRef.value) return;
+
+  await editFormRef.value.validate(async (valid) => {
+    if (!valid) return;
+
+    editSubmitting.value = true;
+    try {
+      await updateArticle(currentArticleId.value, editForm);
+      ElMessage.success("文章更新成功！");
+      editDialogVisible.value = false;
+      fetchArticles();
+    } catch (error) {
+      ElMessage.error(error.message || "更新失败");
+    } finally {
+      editSubmitting.value = false;
+    }
+  });
+};
+
+// ====== 删除文章 ======
+const handleDelete = (id) => {
+  ElMessageBox.confirm("确定要删除这篇文章吗？删除后无法恢复。", "确认删除", {
+    confirmButtonText: "确定删除",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      try {
+        await deleteArticle(id);
+        ElMessage.success("删除成功");
+        fetchArticles();
+      } catch (error) {
+        ElMessage.error(error.message || "删除失败");
+      }
+    })
+    .catch(() => {
+      // 用户取消删除
+    });
+};
+
+// ====== 退出登录 ======
 const handleLogout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("username");
@@ -192,7 +344,7 @@ const handleLogout = () => {
   router.push("/login");
 };
 
-// 格式化时间
+// ====== 格式化时间 ======
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
   const date = new Date(dateStr);
