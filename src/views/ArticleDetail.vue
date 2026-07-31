@@ -23,6 +23,55 @@
         </div>
       </article>
 
+      <!-- ====== 评论区域 ====== -->
+      <div class="comment-section" v-if="article">
+        <h3>💬 评论（{{ comments.length }}）</h3>
+
+        <!-- 发表评论 -->
+        <div v-if="isLoggedIn" class="comment-form">
+          <el-input
+            v-model="newComment"
+            type="textarea"
+            :rows="3"
+            placeholder="写下你的评论..."
+          />
+          <el-button
+            type="primary"
+            :loading="submitting"
+            @click="submitComment"
+            style="margin-top: 12px"
+          >
+            发表评论
+          </el-button>
+        </div>
+        <p v-else class="login-tip">请 <a href="/login">登录</a> 后发表评论</p>
+
+        <!-- 评论列表 -->
+        <div class="comment-list">
+          <div v-for="item in comments" :key="item.id" class="comment-item">
+            <div class="comment-user">
+              <strong>{{ getCommentUser(item) }}</strong>
+              <span class="comment-date">{{
+                formatDate(item.createTime)
+              }}</span>
+              <el-button
+                v-if="canDelete(item)"
+                type="danger"
+                size="small"
+                @click="handleDeleteComment(item.id)"
+                style="margin-left: 12px"
+              >
+                删除
+              </el-button>
+            </div>
+            <div class="comment-content">{{ item.content }}</div>
+          </div>
+          <div v-if="comments.length === 0" class="no-comment">
+            还没有评论，来说两句吧～
+          </div>
+        </div>
+      </div>
+
       <!-- 文章不存在 -->
       <div v-else class="empty">文章不存在或已被删除</div>
     </div>
@@ -30,21 +79,55 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
 import { getArticleDetail } from "../api/article";
+import {
+  getCommentList,
+  publishComment,
+  deleteComment as apiDeleteComment,
+} from "../api/comment";
 import { marked } from "marked";
 
 const route = useRoute();
 const router = useRouter();
+
+// ====== 文章相关 ======
 const article = ref(null);
 const loading = ref(true);
 
+// ====== 评论相关 ======
+const comments = ref([]);
+const newComment = ref("");
+const submitting = ref(false);
+
+// 是否已登录
+const isLoggedIn = computed(() => {
+  return !!localStorage.getItem("token");
+});
+
+// 获取评论用户显示名
+const getCommentUser = (item) => {
+  return item.userId === 1 ? "晓升汐落" : "用户" + item.userId;
+};
+
+// 判断是否可以删除评论（博主 或 评论作者本人）
+const canDelete = (item) => {
+  const token = localStorage.getItem("token");
+  if (!token) return false;
+  return item.userId === 1;
+};
+
+// ====== 获取文章 ======
 const fetchArticle = async () => {
   try {
     loading.value = true;
     const id = route.params.id;
     article.value = await getArticleDetail(id);
+    if (article.value) {
+      await fetchComments();
+    }
   } catch (error) {
     console.error("获取文章详情失败:", error);
     article.value = null;
@@ -53,6 +136,54 @@ const fetchArticle = async () => {
   }
 };
 
+// ====== 获取评论列表 ======
+const fetchComments = async () => {
+  try {
+    const id = route.params.id;
+    comments.value = await getCommentList(id);
+  } catch (error) {
+    console.error("获取评论列表失败:", error);
+    comments.value = [];
+  }
+};
+
+// ====== 发表评论 ======
+const submitComment = async () => {
+  if (!newComment.value.trim()) {
+    ElMessage.warning("请输入评论内容");
+    return;
+  }
+
+  submitting.value = true;
+  try {
+    const data = {
+      articleId: parseInt(route.params.id),
+      content: newComment.value.trim(),
+      parentId: 0,
+    };
+    await publishComment(data);
+    ElMessage.success("评论发表成功！");
+    newComment.value = "";
+    await fetchComments();
+  } catch (error) {
+    ElMessage.error(error.message || "评论发表失败");
+  } finally {
+    submitting.value = false;
+  }
+};
+
+// ====== 删除评论（改名避免冲突） ======
+const handleDeleteComment = async (id) => {
+  try {
+    await apiDeleteComment(id);
+    ElMessage.success("评论删除成功");
+    await fetchComments();
+  } catch (error) {
+    ElMessage.error(error.message || "删除失败");
+  }
+};
+
+// ====== 工具方法 ======
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
   const date = new Date(dateStr);
@@ -63,7 +194,6 @@ const formatDate = (dateStr) => {
   });
 };
 
-// 使用 marked 渲染 Markdown
 const renderMarkdown = (content) => {
   if (!content) return "";
   return marked(content);
@@ -216,6 +346,77 @@ onMounted(() => {
   margin-top: 32px;
   padding-top: 20px;
   border-top: 1px solid #ecf0f1;
+}
+
+/* ===== 评论样式 ===== */
+.comment-section {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 2px solid #ecf0f1;
+}
+
+.comment-section h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.comment-form {
+  margin-bottom: 24px;
+}
+
+.login-tip {
+  color: #95a5a6;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.login-tip a {
+  color: #667eea;
+  text-decoration: none;
+}
+
+.login-tip a:hover {
+  text-decoration: underline;
+}
+
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comment-item {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.comment-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.comment-user strong {
+  color: #2c3e50;
+}
+
+.comment-date {
+  font-size: 0.8rem;
+  color: #95a5a6;
+}
+
+.comment-content {
+  color: #34495e;
+  line-height: 1.6;
+}
+
+.no-comment {
+  text-align: center;
+  color: #95a5a6;
+  padding: 20px 0;
 }
 
 .loading,
