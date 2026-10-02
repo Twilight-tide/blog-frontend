@@ -89,6 +89,7 @@ import {
   deleteComment as apiDeleteComment,
 } from "../api/comment";
 import { marked } from "marked";
+import DOMPurify from "dompurify";
 
 const route = useRoute();
 const router = useRouter();
@@ -196,7 +197,7 @@ const formatDate = (dateStr) => {
 
 const renderMarkdown = (content) => {
   if (!content) return "";
-  return marked(content);
+  return DOMPurify.sanitize(marked(content));
 };
 
 const goBack = () => {

@@ -2,7 +2,7 @@ import axios from "axios";
 import { ElMessage } from "element-plus";
 
 const request = axios.create({
-  baseURL: "http://localhost:8080", // 后端地址
+  baseURL: "/", // 后端地址
   timeout: 10000,
 });
 
