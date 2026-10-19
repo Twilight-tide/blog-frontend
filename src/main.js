@@ -2,10 +2,14 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
+import "element-plus/theme-chalk/dark/css-vars.css";
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 
 import App from "./App.vue";
 import router from "./router";
+
+// 全局启用暗色（配合 theme.css 的深空底色）
+document.documentElement.classList.add("dark");
 
 const app = createApp(App);
 

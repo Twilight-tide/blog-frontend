@@ -1,26 +1,29 @@
 <template>
   <div id="app">
-    <router-view />
+    <!-- 全局背景装饰：极光 + 网格 -->
+    <div class="aurora"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- 开屏动画（同一会话只播一次） -->
+    <SplashScreen />
+
+    <!-- 路由页面 + 过渡 -->
+    <RouterView v-slot="{ Component }">
+      <Transition name="page" mode="out-in">
+        <component :is="Component" />
+      </Transition>
+    </RouterView>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import SplashScreen from "./components/SplashScreen.vue";
+import "./styles/theme.css";
+</script>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-}
-
 #app {
   min-height: 100vh;
-  background: #f5f7fa;
+  position: relative;
 }
 </style>
