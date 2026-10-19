@@ -32,14 +32,20 @@ request.interceptors.response.use(
     }
   },
   (error) => {
+    const res = error.response?.data;
+    const serverMsg =
+      res && typeof res === "object" && res.msg ? String(res.msg) : "";
+
     if (error.response?.status === 401) {
       ElMessage.error("登录已过期，请重新登录");
       localStorage.removeItem("token");
-      // 可以跳转到登录页
+    } else if (serverMsg) {
+      // 后端业务错误（400/404/500）都带 msg，优先展示它
+      ElMessage.error(serverMsg);
     } else {
       ElMessage.error(error.message || "网络错误");
     }
-    return Promise.reject(error);
+    return Promise.reject(new Error(serverMsg || error.message || "网络错误"));
   },
 );
 

@@ -47,6 +47,11 @@
         </el-form-item>
       </el-form>
 
+      <div class="switch">
+        <span>还没有账号？</span>
+        <a @click="goRegister">立即注册</a>
+      </div>
+
       <a class="back-home" @click="goHome">← 返回首页</a>
     </div>
   </div>
@@ -93,6 +98,10 @@ const handleLogin = async () => {
       loading.value = false;
     }
   });
+};
+
+const goRegister = () => {
+  router.push("/register");
 };
 
 const goHome = () => {
@@ -207,6 +216,19 @@ const goHome = () => {
 .login-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.switch {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-faint);
+}
+
+.switch a {
+  margin-left: 5px;
+  color: var(--accent);
+  cursor: pointer;
 }
 
 .back-home {
