@@ -81,8 +81,10 @@ import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { register, login } from "../api/user";
+import { useAuthStore } from "../store/auth";
 
 const router = useRouter();
+const auth = useAuthStore();
 const formRef = ref(null);
 const loading = ref(false);
 
@@ -142,9 +144,7 @@ const handleRegister = async () => {
           username: form.username.trim(),
           password: form.password,
         });
-        localStorage.setItem("token", res.token);
-        localStorage.setItem("username", res.username);
-        localStorage.setItem("nickname", res.nickname || res.username);
+        auth.setSession(res);
         ElMessage.success("注册成功，已自动登录");
         router.push("/");
       } catch (loginError) {

@@ -1,17 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
-import AdminView from "../views/AdminView.vue";
-
-// 路由守卫：检查是否登录
-const requireAuth = (to, from, next) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    next("/login");
-  } else {
-    next();
-  }
-};
+import { useAuthStore } from "../store/auth";
 
 const routes = [
   {
@@ -35,16 +25,61 @@ const routes = [
     component: () => import("../views/RegisterView.vue"),
   },
   {
-    path: "/admin",
-    name: "admin",
-    component: AdminView,
-    beforeEnter: requireAuth, // 需要登录才能访问
+    // 作者中心：授权作者与管理员
+    path: "/author",
+    name: "author",
+    component: () => import("../views/AuthorView.vue"),
+    meta: { requiresAuth: true, requiresAuthor: true },
   },
+  {
+    // 后台管理：仅管理员
+    path: "/admin",
+    component: () => import("../views/admin/AdminLayout.vue"),
+    meta: { requiresAuth: true, requiresAdmin: true },
+    children: [
+      { path: "", redirect: "/admin/dashboard" },
+      {
+        path: "dashboard",
+        name: "adminDashboard",
+        component: () => import("../views/admin/DashboardView.vue"),
+      },
+      {
+        path: "users",
+        name: "adminUsers",
+        component: () => import("../views/admin/UsersView.vue"),
+      },
+      {
+        path: "articles",
+        name: "adminArticles",
+        component: () => import("../views/admin/ArticlesView.vue"),
+      },
+      {
+        path: "comments",
+        name: "adminComments",
+        component: () => import("../views/admin/CommentsView.vue"),
+      },
+    ],
+  },
+  { path: "/:pathMatch(.*)*", redirect: "/" },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((to) => {
+  const auth = useAuthStore();
+
+  if (to.meta.requiresAuth && !auth.isLoggedIn) {
+    return { path: "/login", query: { redirect: to.fullPath } };
+  }
+  if (to.meta.requiresAdmin && !auth.isAdmin) {
+    return auth.canPublish ? "/author" : "/";
+  }
+  if (to.meta.requiresAuthor && !auth.canPublish) {
+    return "/";
+  }
 });
 
 export default router;

@@ -100,9 +100,11 @@ import {
 } from "../api/comment";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
+import { useAuthStore } from "../store/auth";
 
 const route = useRoute();
 const router = useRouter();
+const auth = useAuthStore();
 
 const article = ref(null);
 const loading = ref(true);
@@ -111,16 +113,17 @@ const newComment = ref("");
 const submitting = ref(false);
 const progress = ref(0);
 
-const isLoggedIn = computed(() => !!localStorage.getItem("token"));
+const isLoggedIn = computed(() => auth.isLoggedIn);
 
 const getCommentUser = (item) => {
-  return item.userId === 1 ? "晓升汐落" : "用户" + item.userId;
+  if (auth.userId && item.userId === auth.userId) return "我";
+  return "用户" + item.userId;
 };
 
 const canDelete = (item) => {
-  const token = localStorage.getItem("token");
-  if (!token) return false;
-  return item.userId === 1;
+  if (!auth.isLoggedIn) return false;
+  // 管理员可删任意评论，其他用户只能删自己的
+  return auth.isAdmin || item.userId === auth.userId;
 };
 
 const fetchArticle = async () => {

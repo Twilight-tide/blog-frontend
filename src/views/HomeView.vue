@@ -9,10 +9,15 @@
         </a>
         <nav class="nav-links">
           <a class="nav-link" href="#articles">文章</a>
-          <button v-if="isLoggedIn" class="btn-ghost" @click="goToAdmin">
-            管理后台
-          </button>
-          <button v-else class="btn-ghost" @click="goLogin">登录</button>
+          <template v-if="!auth.isLoggedIn">
+            <button class="btn-ghost" @click="goLogin">登录</button>
+          </template>
+          <template v-else>
+            <button v-if="auth.canPublish" class="btn-ghost" @click="goWorkspace">
+              {{ auth.isAdmin ? "管理后台" : "作者中心" }}
+            </button>
+            <button class="btn-ghost" @click="goLogout">退出</button>
+          </template>
         </nav>
       </div>
     </header>
@@ -132,9 +137,12 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
 import { getArticleList } from "../api/article";
+import { useAuthStore } from "../store/auth";
 
 const router = useRouter();
+const auth = useAuthStore();
 const articles = ref([]);
 const loading = ref(true);
 const selectedCategory = ref("");
@@ -162,7 +170,7 @@ const displayArticles = computed(() => {
   return filteredByCategory.value.slice(0, currentPage.value * pageSize.value);
 });
 
-const isLoggedIn = computed(() => !!localStorage.getItem("token"));
+const isLoggedIn = computed(() => auth.isLoggedIn);
 
 const stripHtml = (html) => {
   if (!html) return "";
@@ -204,8 +212,13 @@ const goToDetail = (id) => {
   router.push(`/article/${id}`);
 };
 
-const goToAdmin = () => {
-  router.push("/admin");
+const goWorkspace = () => {
+  router.push(auth.isAdmin ? "/admin/dashboard" : "/author");
+};
+
+const goLogout = () => {
+  auth.clear();
+  ElMessage.success("已退出");
 };
 
 const goLogin = () => {

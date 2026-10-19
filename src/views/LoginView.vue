@@ -59,11 +59,14 @@
 
 <script setup>
 import { ref, reactive } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { ElMessage } from "element-plus";
 import { login } from "../api/user";
+import { useAuthStore } from "../store/auth";
 
 const router = useRouter();
+const route = useRoute();
+const auth = useAuthStore();
 const formRef = ref(null);
 const loading = ref(false);
 
@@ -86,12 +89,20 @@ const handleLogin = async () => {
     loading.value = true;
     try {
       const res = await login(form);
-      localStorage.setItem("token", res.token);
-      localStorage.setItem("username", res.username);
-      localStorage.setItem("nickname", res.nickname);
+      auth.setSession(res);
 
       ElMessage.success("登录成功");
-      router.push("/admin");
+
+      const redirect = route.query.redirect;
+      if (redirect) {
+        router.push(redirect);
+      } else if (auth.isAdmin) {
+        router.push("/admin/dashboard");
+      } else if (auth.canPublish) {
+        router.push("/author");
+      } else {
+        router.push("/");
+      }
     } catch (error) {
       ElMessage.error(error.message || "登录失败，请检查用户名和密码");
     } finally {

@@ -24,3 +24,8 @@ export const updateArticle = (id, data) => {
 export const deleteArticle = (id) => {
   return request.delete(`/api/article/${id}`);
 };
+
+// 我的文章（作者中心）
+export const getMyArticles = () => {
+  return request.get("/api/article/mine");
+};

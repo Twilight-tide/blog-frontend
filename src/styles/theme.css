@@ -366,3 +366,15 @@ img {
     transform: none;
   }
 }
+
+/* ---------- Element Plus 主色跟随主题 ---------- */
+
+:root[data-theme] {
+  --el-color-primary: var(--accent);
+  --el-color-primary-light-3: color-mix(in srgb, var(--accent) 72%, var(--bg));
+  --el-color-primary-light-5: color-mix(in srgb, var(--accent) 52%, var(--bg));
+  --el-color-primary-light-7: color-mix(in srgb, var(--accent) 32%, var(--bg));
+  --el-color-primary-light-8: color-mix(in srgb, var(--accent) 22%, var(--bg));
+  --el-color-primary-light-9: color-mix(in srgb, var(--accent) 12%, var(--bg));
+  --el-color-primary-dark-2: color-mix(in srgb, var(--accent) 82%, #000);
+}

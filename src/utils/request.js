@@ -37,8 +37,11 @@ request.interceptors.response.use(
       res && typeof res === "object" && res.msg ? String(res.msg) : "";
 
     if (error.response?.status === 401) {
-      ElMessage.error("登录已过期，请重新登录");
       localStorage.removeItem("token");
+      // /api/user/me 是启动时的静默校验，过期时不打扰用户
+      if (!String(error.config?.url || "").includes("/api/user/me")) {
+        ElMessage.error("登录已过期，请重新登录");
+      }
     } else if (serverMsg) {
       // 后端业务错误（400/404/500）都带 msg，优先展示它
       ElMessage.error(serverMsg);
