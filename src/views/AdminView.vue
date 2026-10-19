@@ -3,22 +3,24 @@
     <!-- 顶栏 -->
     <header class="admin-header">
       <div class="header-left">
-        <h2>📝 文章管理</h2>
+        <span class="dot"></span>
+        <span class="brand">晓升汐落</span>
+        <span class="sep"></span>
+        <span class="crumb">文章管理</span>
       </div>
       <div class="header-right">
-        <span>你好，{{ nickname }}</span>
-        <el-button type="danger" size="small" @click="handleLogout"
-          >退出</el-button
-        >
+        <span class="who">你好，{{ nickname }}</span>
+        <button class="btn-text" @click="goHome">返回首页</button>
+        <button class="btn-ghost" @click="handleLogout">退出</button>
       </div>
     </header>
 
     <!-- 主体 -->
     <div class="admin-body">
       <!-- 发布文章卡片 -->
-      <el-card class="publish-card">
+      <el-card class="panel" shadow="never">
         <template #header>
-          <span>发布新文章</span>
+          <span class="panel-title">发布新文章</span>
         </template>
 
         <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
@@ -43,37 +45,40 @@
           </el-form-item>
 
           <el-form-item label="内容" prop="content">
-            <div style="border: 1px solid #dcdfe6; border-radius: 4px">
+            <div class="editor-wrap">
               <Toolbar
                 :editor="editorRef"
                 :defaultConfig="toolbarConfig"
                 mode="simple"
-                style="border-bottom: 1px solid #dcdfe6"
+                class="editor-toolbar"
               />
               <Editor
                 v-model="form.content"
                 :defaultConfig="editorConfig"
                 mode="simple"
-                style="height: 400px; overflow-y: hidden"
+                class="editor-body"
                 @onCreated="handleEditorCreated"
               />
             </div>
           </el-form-item>
 
           <el-form-item>
-            <el-button
-              type="primary"
-              :loading="submitting"
+            <button
+              class="btn-primary"
+              type="button"
+              :disabled="submitting"
               @click="handlePublish"
             >
-              发布文章
-            </el-button>
-            <el-button @click="resetForm">重置</el-button>
+              {{ submitting ? "发布中…" : "发布文章" }}
+            </button>
+            <button class="btn-ghost" type="button" @click="resetForm">
+              重置
+            </button>
           </el-form-item>
         </el-form>
       </el-card>
 
-      <!-- ====== 编辑对话框 ====== -->
+      <!-- 编辑对话框 -->
       <el-dialog
         v-model="editDialogVisible"
         title="编辑文章"
@@ -104,18 +109,18 @@
           </el-form-item>
 
           <el-form-item label="内容" prop="content">
-            <div style="border: 1px solid #dcdfe6; border-radius: 4px">
+            <div class="editor-wrap">
               <Toolbar
                 :editor="editEditorRef"
                 :defaultConfig="toolbarConfig"
                 mode="simple"
-                style="border-bottom: 1px solid #dcdfe6"
+                class="editor-toolbar"
               />
               <Editor
                 v-model="editForm.content"
                 :defaultConfig="editorConfig"
                 mode="simple"
-                style="height: 300px; overflow-y: hidden"
+                class="editor-body editor-body-sm"
                 @onCreated="handleEditEditorCreated"
               />
             </div>
@@ -123,50 +128,43 @@
         </el-form>
 
         <template #footer>
-          <el-button @click="editDialogVisible = false">取消</el-button>
-          <el-button
-            type="primary"
-            :loading="editSubmitting"
+          <button class="btn-ghost" type="button" @click="editDialogVisible = false">
+            取消
+          </button>
+          <button
+            class="btn-primary"
+            type="button"
+            :disabled="editSubmitting"
             @click="handleUpdate"
           >
-            保存修改
-          </el-button>
+            {{ editSubmitting ? "保存中…" : "保存修改" }}
+          </button>
         </template>
       </el-dialog>
 
       <!-- 已发布文章列表 -->
-      <el-card class="article-list-card" style="margin-top: 24px">
+      <el-card class="panel panel-list" shadow="never">
         <template #header>
-          <span>已发布文章</span>
+          <span class="panel-title">已发布文章</span>
         </template>
 
-        <el-table :data="articles" style="width: 100%" v-loading="tableLoading">
-          <el-table-column prop="id" label="ID" width="60" />
-          <el-table-column prop="title" label="标题" min-width="150" />
-          <el-table-column prop="category" label="分类" width="100" />
-          <el-table-column prop="viewCount" label="浏览量" width="80" />
+        <el-table :data="articles" class="table" v-loading="tableLoading">
+          <el-table-column prop="id" label="ID" width="64" />
+          <el-table-column prop="title" label="标题" min-width="160" />
+          <el-table-column prop="category" label="分类" width="110" />
+          <el-table-column prop="viewCount" label="浏览" width="80" />
           <el-table-column prop="likeCount" label="点赞" width="80" />
-          <el-table-column prop="createTime" label="发布时间" width="160">
+          <el-table-column prop="createTime" label="发布时间" width="170">
             <template #default="{ row }">
               {{ formatDate(row.createTime) }}
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="180" fixed="right">
+          <el-table-column label="操作" width="150" fixed="right">
             <template #default="{ row }">
-              <el-button
-                type="primary"
-                size="small"
-                @click="openEditDialog(row)"
-              >
-                编辑
-              </el-button>
-              <el-button
-                type="danger"
-                size="small"
-                @click="handleDelete(row.id)"
-              >
+              <button class="btn-mini" @click="openEditDialog(row)">编辑</button>
+              <button class="btn-mini danger" @click="handleDelete(row.id)">
                 删除
-              </el-button>
+              </button>
             </template>
           </el-table-column>
         </el-table>
@@ -198,11 +196,9 @@ const articles = ref([]);
 const editDialogVisible = ref(false);
 const currentArticleId = ref(null);
 
-// 用户信息
 const username = localStorage.getItem("username") || "";
 const nickname = localStorage.getItem("nickname") || username;
 
-// 发布表单
 const form = reactive({
   title: "",
   category: "",
@@ -210,7 +206,6 @@ const form = reactive({
   content: "",
 });
 
-// 编辑表单
 const editForm = reactive({
   title: "",
   category: "",
@@ -218,13 +213,11 @@ const editForm = reactive({
   content: "",
 });
 
-// 表单验证规则
 const rules = {
   title: [{ required: true, message: "请输入文章标题", trigger: "blur" }],
   content: [{ required: true, message: "请输入文章内容", trigger: "blur" }],
 };
 
-// 富文本编辑器配置
 const toolbarConfig = {};
 const editorConfig = {
   placeholder: "请输入文章内容...",
@@ -240,7 +233,6 @@ const handleEditEditorCreated = (editor) => {
   editEditorRef.value = editor;
 };
 
-// ====== 发布文章 ======
 const handlePublish = async () => {
   if (!formRef.value) return;
 
@@ -261,7 +253,6 @@ const handlePublish = async () => {
   });
 };
 
-// 重置发布表单
 const resetForm = () => {
   form.title = "";
   form.category = "";
@@ -272,7 +263,6 @@ const resetForm = () => {
   }
 };
 
-// ====== 获取文章列表 ======
 const fetchArticles = async () => {
   tableLoading.value = true;
   try {
@@ -284,7 +274,6 @@ const fetchArticles = async () => {
   }
 };
 
-// ====== 编辑文章 ======
 const openEditDialog = (row) => {
   currentArticleId.value = row.id;
   editForm.title = row.title;
@@ -314,7 +303,6 @@ const handleUpdate = async () => {
   });
 };
 
-// ====== 删除文章 ======
 const handleDelete = (id) => {
   ElMessageBox.confirm("确定要删除这篇文章吗？删除后无法恢复。", "确认删除", {
     confirmButtonText: "确定删除",
@@ -330,12 +318,9 @@ const handleDelete = (id) => {
         ElMessage.error(error.message || "删除失败");
       }
     })
-    .catch(() => {
-      // 用户取消删除
-    });
+    .catch(() => {});
 };
 
-// ====== 退出登录 ======
 const handleLogout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("username");
@@ -344,7 +329,10 @@ const handleLogout = () => {
   router.push("/login");
 };
 
-// ====== 格式化时间 ======
+const goHome = () => {
+  router.push("/");
+};
+
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
   const date = new Date(dateStr);
@@ -365,40 +353,264 @@ onMounted(() => {
 <style scoped>
 .admin {
   min-height: 100vh;
-  background: #f5f7fa;
 }
 
+/* ====== 顶栏 ====== */
 .admin-header {
-  background: white;
-  padding: 16px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   position: sticky;
   top: 0;
   z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 66px;
+  background: rgba(7, 8, 13, 0.72);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
 }
 
-.header-left h2 {
-  margin: 0;
-  color: #2c3e50;
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gradient);
+  box-shadow: 0 0 14px rgba(167, 139, 250, 0.8);
+}
+
+.brand {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border-strong);
+}
+
+.crumb {
+  font-size: 0.86rem;
+  color: var(--text-dim);
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
 }
 
+.who {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-right: 4px;
+}
+
+.btn-text {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  padding: 7px 12px;
+  border-radius: 999px;
+  transition: color 0.3s var(--ease), background 0.3s var(--ease);
+}
+
+.btn-text:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.btn-ghost {
+  padding: 8px 18px;
+  font-size: 0.82rem;
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+}
+
+.btn-ghost:hover {
+  border-color: rgba(167, 139, 250, 0.7);
+  background: rgba(167, 139, 250, 0.1);
+}
+
+/* ====== 主体 ====== */
 .admin-body {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 24px 20px 60px;
+  padding: 32px 24px 80px;
 }
 
-.publish-card {
+.panel {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  margin-bottom: 24px;
+}
+
+:deep(.panel .el-card__header) {
+  border-bottom: 1px solid var(--border);
+  padding: 18px 24px;
+}
+
+:deep(.panel .el-card__body) {
+  padding: 24px;
+}
+
+.panel-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+/* 表单深色 */
+:deep(.el-form-item__label) {
+  color: var(--text-dim);
+}
+
+:deep(.el-input__wrapper),
+:deep(.el-textarea__inner) {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  box-shadow: none;
+  border-radius: 10px;
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+}
+
+:deep(.el-input__wrapper:hover),
+:deep(.el-textarea__inner:hover) {
+  border-color: var(--border-strong);
+}
+
+:deep(.el-input__wrapper.is-focus),
+:deep(.el-textarea__inner:focus) {
+  border-color: rgba(167, 139, 250, 0.7);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.12);
+}
+
+:deep(.el-input__inner),
+:deep(.el-textarea__inner) {
+  color: var(--text);
+}
+
+:deep(.el-input__inner::placeholder),
+:deep(.el-textarea__inner::placeholder) {
+  color: var(--text-faint);
+}
+
+/* 编辑器容器 */
+.editor-wrap {
+  width: 100%;
+  border: 1px solid var(--border);
   border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.editor-toolbar {
+  border-bottom: 1px solid var(--border);
+}
+
+.editor-body {
+  height: 400px;
+  overflow-y: hidden;
+}
+
+.editor-body-sm {
+  height: 300px;
+}
+
+/* 按钮 */
+.btn-primary {
+  padding: 9px 24px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #0a0b12;
+  background: var(--gradient);
+  margin-right: 10px;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease),
+    opacity 0.3s var(--ease);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px -18px rgba(167, 139, 250, 0.85);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 表格深色 */
+:deep(.table) {
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: transparent;
+  --el-table-header-bg-color: rgba(255, 255, 255, 0.04);
+  --el-table-border-color: var(--border);
+  --el-table-text-color: var(--text-dim);
+  --el-table-header-text-color: var(--text-dim);
+  --el-table-row-hover-bg-color: rgba(255, 255, 255, 0.045);
+  background: transparent;
+}
+
+:deep(.table .el-table__cell) {
+  padding: 10px 0;
+}
+
+.btn-mini {
+  padding: 5px 12px;
+  margin-right: 6px;
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease),
+    background 0.3s var(--ease);
+}
+
+.btn-mini:hover {
+  color: var(--text);
+  border-color: rgba(34, 211, 238, 0.6);
+  background: rgba(34, 211, 238, 0.08);
+}
+
+.btn-mini.danger:hover {
+  color: #fda4af;
+  border-color: rgba(244, 114, 182, 0.6);
+  background: rgba(244, 114, 182, 0.08);
+}
+
+/* 对话框深色 */
+:deep(.el-dialog) {
+  background: #0d0f17;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+:deep(.el-dialog__title) {
+  color: var(--text);
+}
+
+:deep(.el-dialog__header) {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+}
+
+:deep(.el-dialog__footer) {
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
 }
 
 :deep(.w-e-toolbar) {
@@ -409,5 +621,17 @@ onMounted(() => {
 
 :deep(.w-e-text-container) {
   border: none !important;
+}
+
+@media (max-width: 720px) {
+  .admin-header {
+    padding: 0 16px;
+  }
+  .who {
+    display: none;
+  }
+  .admin-body {
+    padding: 20px 14px 60px;
+  }
 }
 </style>
