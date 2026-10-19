@@ -22,7 +22,7 @@
       <p class="hero-kicker">TWILIGHT · BLOG</p>
 
       <h1 class="hero-title">
-        <span class="gradient-text">晓升汐落</span>
+        <span class="hero-name">晓升汐落</span>
         <span class="hero-title-sub">的技术博客</span>
       </h1>
 
@@ -48,7 +48,7 @@
 
     <!-- ====== 文章区 ====== -->
     <main id="articles" class="content">
-      <div class="section-head reveal">
+      <div class="section-head">
         <h2 class="section-title">最新文章</h2>
         <div class="filters">
           <button
@@ -145,7 +145,6 @@ const year = new Date().getFullYear();
 
 let observer = null;
 
-// 所有分类
 const categories = computed(() => {
   const set = new Set();
   articles.value.forEach((a) => {
@@ -154,20 +153,17 @@ const categories = computed(() => {
   return Array.from(set);
 });
 
-// 1. 先按分类筛选
 const filteredByCategory = computed(() => {
   if (!selectedCategory.value) return articles.value;
   return articles.value.filter((a) => a.category === selectedCategory.value);
 });
 
-// 2. 再按分页截取
 const displayArticles = computed(() => {
   return filteredByCategory.value.slice(0, currentPage.value * pageSize.value);
 });
 
 const isLoggedIn = computed(() => !!localStorage.getItem("token"));
 
-// 去掉 HTML 标签后截断
 const stripHtml = (html) => {
   if (!html) return "";
   const div = document.createElement("div");
@@ -181,13 +177,11 @@ const summaryOf = (article) => {
   return text.length > 120 ? text.slice(0, 120) + "…" : text;
 };
 
-// 加载更多
 const loadMore = () => {
   currentPage.value++;
   requestAnimationFrame(observeReveals);
 };
 
-// 筛选分类（重置分页）
 const filterByCategory = (cat) => {
   selectedCategory.value = cat;
   currentPage.value = 1;
@@ -232,7 +226,6 @@ const formatDate = (dateStr) => {
   });
 };
 
-// 滚动监听 + 元素进入视口
 const onScroll = () => {
   scrolled.value = window.scrollY > 40;
 };
@@ -291,10 +284,10 @@ onUnmounted(() => {
 }
 
 .nav.scrolled {
-  background: rgba(7, 8, 13, 0.72);
+  background: var(--nav-bg);
   border-bottom-color: var(--border);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
 }
 
 .nav-inner {
@@ -313,15 +306,14 @@ onUnmounted(() => {
   gap: 10px;
   font-weight: 600;
   letter-spacing: 0.06em;
+  color: var(--text-strong);
 }
 
 .brand-dot {
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--gradient);
-  box-shadow: 0 0 14px rgba(167, 139, 250, 0.8);
-  animation: dot-pulse 2.4s var(--ease-soft) infinite;
+  background: var(--accent);
 }
 
 .brand-text {
@@ -343,7 +335,7 @@ onUnmounted(() => {
 }
 
 .nav-link:hover {
-  color: var(--text);
+  color: var(--text-strong);
   background: var(--surface);
 }
 
@@ -358,26 +350,14 @@ onUnmounted(() => {
 }
 
 .btn-ghost:hover {
-  border-color: rgba(167, 139, 250, 0.7);
-  background: rgba(167, 139, 250, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
   transform: translateY(-1px);
-}
-
-@keyframes dot-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
-    transform: scale(1);
-  }
-  50% {
-    box-shadow: 0 0 22px rgba(34, 211, 238, 0.9);
-    transform: scale(1.18);
-  }
 }
 
 /* ====== Hero ====== */
 .hero {
-  min-height: min(100vh, 920px);
+  min-height: min(100vh, 900px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -388,38 +368,42 @@ onUnmounted(() => {
 }
 
 .hero-kicker {
-  font-size: 0.74rem;
-  letter-spacing: 0.42em;
-  text-indent: 0.42em;
+  font-size: 0.72rem;
+  letter-spacing: 0.44em;
+  text-indent: 0.44em;
   color: var(--text-faint);
-  margin-bottom: 28px;
+  margin-bottom: 30px;
   animation: rise 1s var(--ease) both;
 }
 
 .hero-title {
-  font-size: clamp(2.6rem, 6.4vw, 4.6rem);
-  font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 6vw, 4.3rem);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: 0.02em;
   animation: rise 1.1s var(--ease) 0.1s both;
+}
+
+.hero-name {
+  color: var(--accent);
 }
 
 .hero-title-sub {
   display: block;
-  color: var(--text);
-  font-weight: 600;
+  color: var(--text-strong);
 }
 
 .hero-desc {
   margin-top: 26px;
-  font-size: clamp(0.95rem, 1.6vw, 1.12rem);
+  font-size: clamp(0.94rem, 1.5vw, 1.06rem);
   color: var(--text-dim);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   animation: rise 1.1s var(--ease) 0.22s both;
 }
 
 .hero-stats {
-  margin-top: 44px;
+  margin-top: 46px;
   display: flex;
   align-items: center;
   gap: 34px;
@@ -429,27 +413,25 @@ onUnmounted(() => {
 .stat {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .stat strong {
-  font-size: 1.9rem;
-  font-weight: 700;
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
 }
 
 .stat span {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--text-faint);
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
 }
 
 .stat-divider {
   width: 1px;
-  height: 34px;
+  height: 32px;
   background: var(--border);
 }
 
@@ -462,9 +444,9 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  font-size: 0.72rem;
-  letter-spacing: 0.28em;
-  text-indent: 0.28em;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
   color: var(--text-faint);
   animation: rise 1.2s var(--ease) 0.5s both;
 }
@@ -473,7 +455,7 @@ onUnmounted(() => {
   display: block;
   width: 1px;
   height: 46px;
-  background: linear-gradient(var(--c2), transparent);
+  background: linear-gradient(var(--border-strong), transparent);
   position: relative;
   overflow: hidden;
 }
@@ -481,12 +463,12 @@ onUnmounted(() => {
 .scroll-hint i::after {
   content: "";
   position: absolute;
-  top: -46px;
+  top: -20px;
   left: 0;
   width: 1px;
-  height: 20px;
-  background: var(--c1);
-  animation: scroll-line 2s var(--ease-soft) infinite;
+  height: 18px;
+  background: var(--accent);
+  animation: scroll-line 2.2s var(--ease-soft) infinite;
 }
 
 @keyframes scroll-line {
@@ -506,7 +488,7 @@ onUnmounted(() => {
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(26px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
@@ -527,15 +509,17 @@ onUnmounted(() => {
   justify-content: space-between;
   gap: 24px;
   flex-wrap: wrap;
-  margin-bottom: 36px;
-  padding-bottom: 22px;
+  margin-bottom: 34px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--border);
 }
 
 .section-title {
-  font-size: 1.5rem;
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.02em;
+  color: var(--text-strong);
 }
 
 .filters {
@@ -546,7 +530,7 @@ onUnmounted(() => {
 
 .filter {
   padding: 7px 16px;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   color: var(--text-dim);
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -555,15 +539,15 @@ onUnmounted(() => {
 }
 
 .filter:hover {
-  color: var(--text);
+  color: var(--text-strong);
   border-color: var(--border-strong);
   transform: translateY(-1px);
 }
 
 .filter.active {
-  color: #0a0b12;
+  color: var(--accent-ink);
   border-color: transparent;
-  background: var(--gradient);
+  background: var(--accent);
   font-weight: 600;
 }
 
@@ -571,58 +555,32 @@ onUnmounted(() => {
 .cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  gap: 18px;
 }
 
 .card {
   position: relative;
-  padding: 28px 30px 22px;
+  padding: 26px 28px 20px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  background: var(--surface);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--bg-soft);
   cursor: pointer;
-  overflow: hidden;
-  transition: transform 0.5s var(--ease), border-color 0.5s var(--ease),
-    box-shadow 0.5s var(--ease), background 0.5s var(--ease);
-}
-
-/* 顶部流光 */
-.card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(167, 139, 250, 0.7),
-    transparent
-  );
-  opacity: 0;
-  transition: opacity 0.5s var(--ease);
+  transition: transform 0.45s var(--ease), border-color 0.45s var(--ease),
+    box-shadow 0.45s var(--ease);
+  box-shadow: var(--card-shadow);
 }
 
 .card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(167, 139, 250, 0.38);
-  background: var(--surface-hover);
-  box-shadow: 0 30px 70px -30px rgba(167, 139, 250, 0.5),
-    0 0 0 1px rgba(167, 139, 250, 0.08);
-}
-
-.card:hover::before {
-  opacity: 1;
+  transform: translateY(-4px);
+  border-color: var(--border-strong);
+  box-shadow: var(--card-shadow-hover);
 }
 
 .card-meta {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 0.76rem;
+  font-size: 0.75rem;
   color: var(--text-faint);
   margin-bottom: 14px;
 }
@@ -630,31 +588,29 @@ onUnmounted(() => {
 .tag {
   padding: 3px 11px;
   border-radius: 999px;
-  background: rgba(167, 139, 250, 0.12);
-  border: 1px solid rgba(167, 139, 250, 0.28);
-  color: #c4b5fd;
+  border: 1px solid var(--border);
+  color: var(--accent);
   letter-spacing: 0.02em;
 }
 
 .card-title {
-  font-size: 1.28rem;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
   font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  color: var(--text-strong);
   margin-bottom: 12px;
-  transition: color 0.35s var(--ease);
+  transition: color 0.3s var(--ease);
 }
 
 .card:hover .card-title {
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--accent);
 }
 
 .card-summary {
-  font-size: 0.92rem;
-  line-height: 1.75;
+  font-size: 0.9rem;
+  line-height: 1.78;
   color: var(--text-dim);
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -664,13 +620,13 @@ onUnmounted(() => {
 }
 
 .card-foot {
-  margin-top: 20px;
-  padding-top: 16px;
+  margin-top: 18px;
+  padding-top: 14px;
   border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   gap: 18px;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--text-faint);
 }
 
@@ -681,8 +637,8 @@ onUnmounted(() => {
 }
 
 .card:hover .card-arrow {
-  color: var(--c1);
-  transform: translateX(5px);
+  color: var(--accent);
+  transform: translateX(4px);
 }
 
 /* ====== 状态 ====== */
@@ -690,32 +646,31 @@ onUnmounted(() => {
   padding: 90px 0;
   text-align: center;
   color: var(--text-faint);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .loading-bar {
   display: block;
-  width: 180px;
-  height: 2px;
+  width: 160px;
+  height: 1px;
   margin: 0 auto 20px;
-  border-radius: 99px;
-  background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3));
+  background: var(--accent);
   transform-origin: left;
   animation: loading-sweep 1.4s var(--ease-soft) infinite;
 }
 
 @keyframes loading-sweep {
   0% {
-    transform: scaleX(0.1);
-    opacity: 0.5;
+    transform: scaleX(0.12);
+    opacity: 0.4;
   }
   50% {
     transform: scaleX(1);
     opacity: 1;
   }
   100% {
-    transform: scaleX(0.1);
-    opacity: 0.5;
+    transform: scaleX(0.12);
+    opacity: 0.4;
   }
 }
 
@@ -726,54 +681,49 @@ onUnmounted(() => {
 }
 
 .empty-icon {
-  font-size: 2rem;
+  font-size: 1.4rem;
   margin-bottom: 12px;
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--accent);
 }
 
 /* ====== 加载更多 ====== */
 .more {
-  margin-top: 42px;
+  margin-top: 40px;
   text-align: center;
 }
 
 .btn-more {
-  padding: 13px 38px;
+  padding: 12px 36px;
   border-radius: 999px;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--text);
   border: 1px solid var(--border-strong);
-  background: var(--surface);
-  transition: border-color 0.35s var(--ease), background 0.35s var(--ease),
-    transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+  transition: border-color 0.35s var(--ease), color 0.35s var(--ease),
+    transform 0.35s var(--ease);
 }
 
 .btn-more:hover {
-  border-color: rgba(34, 211, 238, 0.6);
-  background: rgba(34, 211, 238, 0.08);
+  border-color: var(--accent);
+  color: var(--accent);
   transform: translateY(-2px);
-  box-shadow: 0 16px 40px -18px rgba(34, 211, 238, 0.7);
 }
 
 .list-end {
-  margin-top: 42px;
+  margin-top: 40px;
   text-align: center;
-  font-size: 0.78rem;
-  letter-spacing: 0.2em;
+  font-size: 0.76rem;
+  letter-spacing: 0.22em;
   color: var(--text-faint);
 }
 
 /* ====== 页脚 ====== */
 .footer {
   border-top: 1px solid var(--border);
-  padding: 34px 24px;
+  padding: 32px 24px;
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-faint);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 /* ====== 响应式 ====== */

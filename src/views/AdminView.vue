@@ -17,7 +17,7 @@
 
     <!-- 主体 -->
     <div class="admin-body">
-      <!-- 发布文章卡片 -->
+      <!-- 发布文章 -->
       <el-card class="panel" shadow="never">
         <template #header>
           <span class="panel-title">发布新文章</span>
@@ -142,8 +142,8 @@
         </template>
       </el-dialog>
 
-      <!-- 已发布文章列表 -->
-      <el-card class="panel panel-list" shadow="never">
+      <!-- 文章列表 -->
+      <el-card class="panel" shadow="never">
         <template #header>
           <span class="panel-title">已发布文章</span>
         </template>
@@ -364,11 +364,11 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 0 28px;
-  height: 66px;
-  background: rgba(7, 8, 13, 0.72);
+  height: 64px;
+  background: var(--nav-bg);
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 
 .header-left {
@@ -378,26 +378,26 @@ onMounted(() => {
 }
 
 .dot {
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--gradient);
-  box-shadow: 0 0 14px rgba(167, 139, 250, 0.8);
+  background: var(--accent);
 }
 
 .brand {
   font-weight: 600;
   letter-spacing: 0.06em;
+  color: var(--text-strong);
 }
 
 .sep {
   width: 1px;
-  height: 16px;
+  height: 15px;
   background: var(--border-strong);
 }
 
 .crumb {
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   color: var(--text-dim);
 }
 
@@ -408,13 +408,13 @@ onMounted(() => {
 }
 
 .who {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text-dim);
   margin-right: 4px;
 }
 
 .btn-text {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text-dim);
   padding: 7px 12px;
   border-radius: 999px;
@@ -422,68 +422,68 @@ onMounted(() => {
 }
 
 .btn-text:hover {
-  color: var(--text);
+  color: var(--accent);
   background: var(--surface);
 }
 
 .btn-ghost {
   padding: 8px 18px;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text);
   border: 1px solid var(--border-strong);
   border-radius: 999px;
-  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+  transition: border-color 0.3s var(--ease), color 0.3s var(--ease);
 }
 
 .btn-ghost:hover {
-  border-color: rgba(167, 139, 250, 0.7);
-  background: rgba(167, 139, 250, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* ====== 主体 ====== */
 .admin-body {
-  max-width: 1100px;
+  max-width: var(--maxw);
   margin: 0 auto;
-  padding: 32px 24px 80px;
+  padding: 30px 24px 80px;
 }
 
 .panel {
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  background: var(--surface);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  margin-bottom: 24px;
+  background: var(--bg-soft);
+  box-shadow: var(--card-shadow);
+  margin-bottom: 22px;
 }
 
 :deep(.panel .el-card__header) {
   border-bottom: 1px solid var(--border);
-  padding: 18px 24px;
+  padding: 17px 22px;
 }
 
 :deep(.panel .el-card__body) {
-  padding: 24px;
+  padding: 22px;
 }
 
 .panel-title {
+  font-family: var(--font-serif);
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-strong);
   letter-spacing: 0.02em;
 }
 
-/* 表单深色 */
+/* 表单 */
 :deep(.el-form-item__label) {
   color: var(--text-dim);
 }
 
 :deep(.el-input__wrapper),
 :deep(.el-textarea__inner) {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg);
   border: 1px solid var(--border);
   box-shadow: none;
-  border-radius: 10px;
-  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.3s var(--ease);
 }
 
 :deep(.el-input__wrapper:hover),
@@ -493,9 +493,8 @@ onMounted(() => {
 
 :deep(.el-input__wrapper.is-focus),
 :deep(.el-textarea__inner:focus) {
-  border-color: rgba(167, 139, 250, 0.7);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 :deep(.el-input__inner),
@@ -508,11 +507,11 @@ onMounted(() => {
   color: var(--text-faint);
 }
 
-/* 编辑器容器 */
+/* 编辑器容器：保留白底以保证编辑体验 */
 .editor-wrap {
   width: 100%;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
   background: #fff;
 }
@@ -534,18 +533,17 @@ onMounted(() => {
 .btn-primary {
   padding: 9px 24px;
   border-radius: 999px;
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   font-weight: 600;
-  color: #0a0b12;
-  background: var(--gradient);
+  color: var(--accent-ink);
+  background: var(--accent);
   margin-right: 10px;
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease),
-    opacity 0.3s var(--ease);
+  transition: transform 0.3s var(--ease), opacity 0.3s var(--ease);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 16px 40px -18px rgba(167, 139, 250, 0.85);
+  opacity: 0.92;
 }
 
 .btn-primary:disabled {
@@ -553,15 +551,15 @@ onMounted(() => {
   cursor: not-allowed;
 }
 
-/* 表格深色 */
+/* 表格 */
 :deep(.table) {
   --el-table-bg-color: transparent;
   --el-table-tr-bg-color: transparent;
-  --el-table-header-bg-color: rgba(255, 255, 255, 0.04);
+  --el-table-header-bg-color: var(--surface);
   --el-table-border-color: var(--border);
   --el-table-text-color: var(--text-dim);
   --el-table-header-text-color: var(--text-dim);
-  --el-table-row-hover-bg-color: rgba(255, 255, 255, 0.045);
+  --el-table-row-hover-bg-color: var(--surface-hover);
   background: transparent;
 }
 
@@ -572,35 +570,32 @@ onMounted(() => {
 .btn-mini {
   padding: 5px 12px;
   margin-right: 6px;
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   color: var(--text-dim);
   border: 1px solid var(--border);
   border-radius: 999px;
-  transition: color 0.3s var(--ease), border-color 0.3s var(--ease),
-    background 0.3s var(--ease);
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
 }
 
 .btn-mini:hover {
-  color: var(--text);
-  border-color: rgba(34, 211, 238, 0.6);
-  background: rgba(34, 211, 238, 0.08);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .btn-mini.danger:hover {
-  color: #fda4af;
-  border-color: rgba(244, 114, 182, 0.6);
-  background: rgba(244, 114, 182, 0.08);
+  color: #c4453d;
+  border-color: #c4453d;
 }
 
-/* 对话框深色 */
+/* 对话框 */
 :deep(.el-dialog) {
-  background: #0d0f17;
+  background: var(--bg-soft);
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: var(--radius);
 }
 
 :deep(.el-dialog__title) {
-  color: var(--text);
+  color: var(--text-strong);
 }
 
 :deep(.el-dialog__header) {

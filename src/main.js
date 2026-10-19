@@ -7,9 +7,10 @@ import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 
 import App from "./App.vue";
 import router from "./router";
+import { initTheme } from "./styles/theme";
 
-// 全局启用暗色（配合 theme.css 的深空底色）
-document.documentElement.classList.add("dark");
+// 应用保存的主题（默认「墨白」），并在深色主题下启用 Element Plus 暗色变量
+initTheme();
 
 const app = createApp(App);
 

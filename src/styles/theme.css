@@ -1,50 +1,167 @@
 /* ============================================================
-   Twilight Neon · 设计系统
-   深空底色 + 青紫粉流光 + 玻璃拟态 + 优雅缓动
+   多主题设计系统
+   墨白 paper / 暖砂 sand / 石墨 graphite / 暮光 dusk
+   原则：少发光、少渐变、靠排版与留白出质感
    ============================================================ */
 
-:root {
-  /* 底色 */
-  --bg: #07080d;
-  --bg-soft: #0b0d15;
+/* ---------- 主题变量 ---------- */
+
+:root,
+:root[data-theme="paper"] {
+  --bg: #f7f5f0;
+  --bg-soft: #efece5;
+  --surface: rgba(28, 24, 18, 0.028);
+  --surface-hover: rgba(28, 24, 18, 0.055);
+  --border: rgba(28, 24, 18, 0.1);
+  --border-strong: rgba(28, 24, 18, 0.22);
+
+  --text: #22201d;
+  --text-dim: #6a655c;
+  --text-faint: #9a948a;
+  --text-strong: #16140f;
+
+  --accent: #b0432c;
+  --accent-2: #8a5a3c;
+  --accent-ink: #fdfbf7;
+  --gradient: linear-gradient(115deg, #b0432c, #8a5a3c);
+
+  --code-bg: #efece5;
+  --card-shadow: 0 1px 2px rgba(28, 24, 18, 0.04),
+    0 8px 24px -12px rgba(28, 24, 18, 0.12);
+  --card-shadow-hover: 0 2px 4px rgba(28, 24, 18, 0.05),
+    0 20px 44px -20px rgba(28, 24, 18, 0.2);
+
+  --decor-opacity: 0;
+  --aurora-1: transparent;
+  --aurora-2: transparent;
+  --grid-line: rgba(28, 24, 18, 0.035);
+  --nav-bg: rgba(247, 245, 240, 0.82);
+
+  --radius: 14px;
+  --radius-sm: 10px;
+  --maxw: 1080px;
+
+  color-scheme: light;
+}
+
+:root[data-theme="sand"] {
+  --bg: #f0ebe3;
+  --bg-soft: #e8e2d7;
+  --surface: rgba(90, 70, 45, 0.04);
+  --surface-hover: rgba(90, 70, 45, 0.075);
+  --border: rgba(90, 70, 45, 0.13);
+  --border-strong: rgba(90, 70, 45, 0.26);
+
+  --text: #2f2a22;
+  --text-dim: #6f675a;
+  --text-faint: #9c9486;
+  --text-strong: #1f1b14;
+
+  --accent: #8a6a45;
+  --accent-2: #a67c52;
+  --accent-ink: #faf6ef;
+  --gradient: linear-gradient(115deg, #8a6a45, #a67c52);
+
+  --code-bg: #e8e2d7;
+  --card-shadow: 0 1px 2px rgba(90, 70, 45, 0.05),
+    0 8px 24px -12px rgba(90, 70, 45, 0.14);
+  --card-shadow-hover: 0 2px 4px rgba(90, 70, 45, 0.06),
+    0 20px 44px -20px rgba(90, 70, 45, 0.22);
+
+  --decor-opacity: 0;
+  --aurora-1: transparent;
+  --aurora-2: transparent;
+  --grid-line: rgba(90, 70, 45, 0.04);
+  --nav-bg: rgba(240, 235, 227, 0.82);
+
+  color-scheme: light;
+}
+
+:root[data-theme="graphite"] {
+  --bg: #121316;
+  --bg-soft: #17181c;
   --surface: rgba(255, 255, 255, 0.035);
-  --surface-hover: rgba(255, 255, 255, 0.07);
+  --surface-hover: rgba(255, 255, 255, 0.065);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  --text: #dcdce0;
+  --text-dim: #96969c;
+  --text-faint: #63636a;
+  --text-strong: #f4f4f6;
+
+  --accent: #e6e6ea;
+  --accent-2: #b4b4bb;
+  --accent-ink: #121316;
+  --gradient: linear-gradient(115deg, #f0f0f3, #b4b4bb);
+
+  --code-bg: #0d0e11;
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4),
+    0 12px 32px -16px rgba(0, 0, 0, 0.8);
+  --card-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.5),
+    0 28px 60px -28px rgba(0, 0, 0, 0.95);
+
+  --decor-opacity: 0.25;
+  --aurora-1: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 65%);
+  --aurora-2: radial-gradient(circle, rgba(255, 255, 255, 0.07), transparent 65%);
+  --grid-line: rgba(255, 255, 255, 0.028);
+  --nav-bg: rgba(18, 19, 22, 0.82);
+
+  color-scheme: dark;
+}
+
+:root[data-theme="dusk"] {
+  --bg: #0b0f16;
+  --bg-soft: #10151f;
+  --surface: rgba(255, 255, 255, 0.035);
+  --surface-hover: rgba(255, 255, 255, 0.062);
   --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.18);
+  --border-strong: rgba(255, 255, 255, 0.19);
 
-  /* 文字 */
-  --text: #e9ebf4;
-  --text-dim: #9aa0b5;
-  --text-faint: #62687d;
+  --text: #dfe4ee;
+  --text-dim: #8f98ab;
+  --text-faint: #5c6578;
+  --text-strong: #eef2f9;
 
-  /* 霓虹色 */
-  --c1: #22d3ee; /* cyan */
-  --c2: #a78bfa; /* violet */
-  --c3: #f472b6; /* pink */
-  --gradient: linear-gradient(115deg, var(--c1), var(--c2) 52%, var(--c3));
-  --gradient-soft: linear-gradient(
-    115deg,
-    rgba(34, 211, 238, 0.14),
-    rgba(167, 139, 250, 0.14) 52%,
-    rgba(244, 114, 182, 0.14)
+  --accent: #6b9bd1;
+  --accent-2: #8a7fb8;
+  --accent-ink: #0b0f16;
+  --gradient: linear-gradient(115deg, #6b9bd1, #8a7fb8);
+
+  --code-bg: #0a0d13;
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.35),
+    0 12px 32px -16px rgba(0, 0, 0, 0.7);
+  --card-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.45),
+    0 28px 60px -28px rgba(0, 0, 0, 0.9);
+
+  --decor-opacity: 0.5;
+  --aurora-1: radial-gradient(
+    circle,
+    rgba(107, 155, 209, 0.22),
+    transparent 65%
   );
+  --aurora-2: radial-gradient(
+    circle,
+    rgba(138, 127, 184, 0.2),
+    transparent 65%
+  );
+  --grid-line: rgba(255, 255, 255, 0.026);
+  --nav-bg: rgba(11, 15, 22, 0.82);
 
-  /* 动效曲线 */
+  color-scheme: dark;
+}
+
+/* ---------- 全局基座 ---------- */
+
+:root {
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* 尺寸 */
-  --radius: 20px;
-  --radius-sm: 12px;
-  --maxw: 1120px;
-
-  /* 字体 */
   --font-sans: "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei",
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
     Arial, sans-serif;
+  --font-serif: "Songti SC", "Noto Serif SC", "Source Han Serif SC", Georgia,
+    "Times New Roman", serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
-
-  color-scheme: dark;
 }
 
 * {
@@ -67,14 +184,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
+  transition: background-color 0.4s var(--ease), color 0.4s var(--ease);
 }
 
 ::selection {
-  background: rgba(167, 139, 250, 0.35);
-  color: #fff;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  color: var(--text-strong);
 }
 
-/* 滚动条 */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -83,12 +200,12 @@ body {
   background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(var(--c2), var(--c1));
+  background: var(--border-strong);
   border-radius: 99px;
   border: 2px solid var(--bg);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(var(--c3), var(--c2));
+  background: var(--text-faint);
 }
 
 a {
@@ -107,9 +224,11 @@ img {
   display: block;
 }
 
-/* ============================================================
-   工具类
-   ============================================================ */
+/* ---------- 工具类 ---------- */
+
+.accent-text {
+  color: var(--accent);
+}
 
 .gradient-text {
   background: var(--gradient);
@@ -121,13 +240,18 @@ img {
 .glass {
   background: var(--surface);
   border: 1px solid var(--border);
-  backdrop-filter: blur(24px) saturate(140%);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(130%);
+  -webkit-backdrop-filter: blur(20px) saturate(130%);
 }
 
-/* ============================================================
-   背景装饰（极光 + 网格）
-   ============================================================ */
+/* 浅色主题下不用模糊也能有层次 */
+:root[data-theme="paper"] .glass,
+:root[data-theme="sand"] .glass {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* ---------- 背景装饰（浅色主题隐藏） ---------- */
 
 .aurora {
   position: fixed;
@@ -135,32 +259,32 @@ img {
   z-index: -2;
   overflow: hidden;
   pointer-events: none;
+  opacity: var(--decor-opacity);
+  transition: opacity 0.6s var(--ease);
 }
 
 .aurora::before,
 .aurora::after {
   content: "";
   position: absolute;
-  width: 62vw;
-  height: 62vw;
+  width: 58vw;
+  height: 58vw;
   border-radius: 50%;
-  filter: blur(130px);
-  opacity: 0.55;
-  will-change: transform;
+  filter: blur(120px);
 }
 
 .aurora::before {
-  top: -22vw;
+  top: -20vw;
   left: -12vw;
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.3), transparent 65%);
-  animation: drift-a 20s var(--ease-soft) infinite alternate;
+  background: var(--aurora-1);
+  animation: drift-a 24s var(--ease-soft) infinite alternate;
 }
 
 .aurora::after {
-  bottom: -28vw;
-  right: -16vw;
-  background: radial-gradient(circle, rgba(167, 139, 250, 0.28), transparent 65%);
-  animation: drift-b 26s var(--ease-soft) infinite alternate;
+  bottom: -26vw;
+  right: -14vw;
+  background: var(--aurora-2);
+  animation: drift-b 30s var(--ease-soft) infinite alternate;
 }
 
 .grid-overlay {
@@ -168,11 +292,13 @@ img {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.024) 1px, transparent 1px);
-  background-size: 64px 64px;
-  -webkit-mask-image: radial-gradient(ellipse at 50% 28%, #000 18%, transparent 72%);
-  mask-image: radial-gradient(ellipse at 50% 28%, #000 18%, transparent 72%);
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 72px 72px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 22%, #000 14%, transparent 70%);
+  mask-image: radial-gradient(ellipse at 50% 22%, #000 14%, transparent 70%);
+  opacity: var(--decor-opacity);
+  transition: opacity 0.6s var(--ease);
 }
 
 @keyframes drift-a {
@@ -180,27 +306,25 @@ img {
     transform: translate3d(0, 0, 0) scale(1);
   }
   to {
-    transform: translate3d(7vw, 5vw, 0) scale(1.18);
+    transform: translate3d(5vw, 4vw, 0) scale(1.12);
   }
 }
 
 @keyframes drift-b {
   from {
-    transform: translate3d(0, 0, 0) scale(1.1);
+    transform: translate3d(0, 0, 0) scale(1.08);
   }
   to {
-    transform: translate3d(-6vw, -4vw, 0) scale(0.95);
+    transform: translate3d(-4vw, -3vw, 0) scale(0.96);
   }
 }
 
-/* ============================================================
-   滚动进入动画
-   ============================================================ */
+/* ---------- 滚动揭示 ---------- */
 
 .reveal {
   opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.85s var(--ease), transform 0.85s var(--ease);
+  transform: translateY(24px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
   transition-delay: var(--d, 0ms);
 }
 
@@ -209,26 +333,22 @@ img {
   transform: none;
 }
 
-/* ============================================================
-   路由过渡
-   ============================================================ */
+/* ---------- 路由过渡 ---------- */
 
 .page-enter-active,
 .page-leave-active {
-  transition: opacity 0.36s var(--ease), transform 0.36s var(--ease);
+  transition: opacity 0.34s var(--ease), transform 0.34s var(--ease);
 }
 .page-enter-from {
   opacity: 0;
-  transform: translateY(14px);
+  transform: translateY(12px);
 }
 .page-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateY(-6px);
 }
 
-/* ============================================================
-   无障碍：尊重减少动效偏好
-   ============================================================ */
+/* ---------- 减少动效 ---------- */
 
 @media (prefers-reduced-motion: reduce) {
   html {

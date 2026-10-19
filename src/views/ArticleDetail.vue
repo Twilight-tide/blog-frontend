@@ -6,10 +6,8 @@
     <button class="back-float" @click="goBack" aria-label="返回">←</button>
 
     <div class="container">
-      <!-- 加载 -->
       <div v-if="loading" class="state">正在加载…</div>
 
-      <!-- 文章 -->
       <article v-else-if="article" class="article">
         <header class="head">
           <div class="head-top">
@@ -33,7 +31,6 @@
         </div>
       </article>
 
-      <!-- 不存在 -->
       <div v-else class="state">文章不存在或已被删除</div>
 
       <!-- 评论区 -->
@@ -232,7 +229,6 @@ onUnmounted(() => {
   padding-bottom: 80px;
 }
 
-/* 阅读进度 */
 .progress {
   position: fixed;
   top: 0;
@@ -245,18 +241,17 @@ onUnmounted(() => {
 .progress i {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6);
+  background: var(--accent);
   transform-origin: left;
   transform: scaleX(0);
   transition: transform 0.12s linear;
 }
 
-/* 浮动返回 */
 .back-float {
   position: fixed;
   top: 22px;
   left: 50%;
-  transform: translateX(-50%) translateX(-560px);
+  transform: translateX(-50%) translateX(-540px);
   z-index: 150;
   width: 40px;
   height: 40px;
@@ -264,28 +259,27 @@ onUnmounted(() => {
   font-size: 1.05rem;
   color: var(--text-dim);
   border: 1px solid var(--border);
-  background: rgba(7, 8, 13, 0.6);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   transition: color 0.3s var(--ease), border-color 0.3s var(--ease),
     transform 0.3s var(--ease);
 }
 
 .back-float:hover {
-  color: var(--text);
-  border-color: var(--border-strong);
-  transform: translateX(-50%) translateX(-560px) translateY(-2px);
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: translateX(-50%) translateX(-540px) translateY(-2px);
 }
 
 .container {
-  max-width: 780px;
+  max-width: 760px;
   margin: 0 auto;
   padding: 96px 28px 0;
 }
 
-/* ====== 文章头 ====== */
 .head {
-  padding-bottom: 34px;
+  padding-bottom: 32px;
   border-bottom: 1px solid var(--border);
   margin-bottom: 44px;
   animation: rise 0.9s var(--ease) both;
@@ -296,16 +290,15 @@ onUnmounted(() => {
   align-items: center;
   gap: 12px;
   margin-bottom: 20px;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--text-faint);
 }
 
 .tag {
   padding: 3px 12px;
   border-radius: 999px;
-  background: rgba(167, 139, 250, 0.12);
-  border: 1px solid rgba(167, 139, 250, 0.3);
-  color: #c4b5fd;
+  border: 1px solid var(--border);
+  color: var(--accent);
 }
 
 .sep {
@@ -315,26 +308,26 @@ onUnmounted(() => {
 }
 
 .title {
-  font-size: clamp(1.9rem, 4vw, 2.9rem);
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  color: #f2f4fb;
+  font-family: var(--font-serif);
+  font-size: clamp(1.85rem, 4vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: var(--text-strong);
   margin-bottom: 20px;
 }
 
 .meta {
   display: flex;
   gap: 22px;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text-faint);
 }
 
-/* ====== 正文排版 ====== */
 .content {
   font-size: 1.04rem;
   line-height: 1.92;
-  color: #d3d7e6;
+  color: var(--text);
   animation: rise 1s var(--ease) 0.12s both;
 }
 
@@ -342,23 +335,23 @@ onUnmounted(() => {
 .content :deep(h2),
 .content :deep(h3),
 .content :deep(h4) {
-  color: #f2f4fb;
-  font-weight: 650;
+  font-family: var(--font-serif);
+  color: var(--text-strong);
+  font-weight: 600;
   line-height: 1.4;
-  margin: 2.2em 0 0.9em;
-  letter-spacing: -0.01em;
+  margin: 2.1em 0 0.85em;
 }
 
 .content :deep(h1) {
-  font-size: 1.75rem;
+  font-size: 1.7rem;
 }
 .content :deep(h2) {
-  font-size: 1.45rem;
-  padding-bottom: 0.35em;
+  font-size: 1.4rem;
+  padding-bottom: 0.32em;
   border-bottom: 1px solid var(--border);
 }
 .content :deep(h3) {
-  font-size: 1.2rem;
+  font-size: 1.18rem;
 }
 
 .content :deep(p) {
@@ -366,12 +359,12 @@ onUnmounted(() => {
 }
 
 .content :deep(a) {
-  color: var(--c1);
-  border-bottom: 1px solid rgba(34, 211, 238, 0.35);
-  transition: border-color 0.3s var(--ease);
+  color: var(--accent);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
 }
+
 .content :deep(a:hover) {
-  border-bottom-color: var(--c1);
+  border-bottom-color: var(--accent);
 }
 
 .content :deep(ul),
@@ -385,16 +378,15 @@ onUnmounted(() => {
 }
 
 .content :deep(li::marker) {
-  color: var(--c2);
+  color: var(--accent);
 }
 
 .content :deep(blockquote) {
   margin: 1.5em 0;
   padding: 14px 20px;
-  border-left: 2px solid transparent;
-  border-image: linear-gradient(180deg, #22d3ee, #a78bfa) 1;
-  background: rgba(167, 139, 250, 0.06);
-  border-radius: 0 12px 12px 0;
+  border-left: 2px solid var(--accent);
+  background: var(--surface);
+  border-radius: 0 10px 10px 0;
   color: var(--text-dim);
 }
 
@@ -403,19 +395,18 @@ onUnmounted(() => {
   font-size: 0.88em;
   padding: 2px 7px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--code-bg);
   border: 1px solid var(--border);
-  color: #e6d5ff;
+  color: var(--text-strong);
 }
 
 .content :deep(pre) {
   margin: 1.5em 0;
   padding: 20px 22px;
-  border-radius: 14px;
-  background: #0c0e16;
+  border-radius: 12px;
+  background: var(--code-bg);
   border: 1px solid var(--border);
   overflow-x: auto;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .content :deep(pre code) {
@@ -424,12 +415,12 @@ onUnmounted(() => {
   padding: 0;
   font-size: 0.86rem;
   line-height: 1.75;
-  color: #c9cede;
+  color: var(--text-dim);
 }
 
 .content :deep(img) {
   margin: 1.6em auto;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid var(--border);
 }
 
@@ -437,7 +428,7 @@ onUnmounted(() => {
   width: 100%;
   margin: 1.5em 0;
   border-collapse: collapse;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
 }
 
 .content :deep(th),
@@ -448,34 +439,28 @@ onUnmounted(() => {
 }
 
 .content :deep(th) {
-  background: rgba(255, 255, 255, 0.04);
-  color: #f0f2fa;
+  background: var(--surface);
+  color: var(--text-strong);
   font-weight: 600;
 }
 
 .content :deep(hr) {
-  margin: 2.5em 0;
+  margin: 2.4em 0;
   border: none;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--border-strong),
-    transparent
-  );
+  background: var(--border);
 }
 
-/* ====== 文章底部 ====== */
 .article-foot {
-  margin-top: 56px;
-  padding-top: 28px;
+  margin-top: 54px;
+  padding-top: 26px;
   border-top: 1px solid var(--border);
 }
 
 .btn-line {
   padding: 11px 26px;
   border-radius: 999px;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   color: var(--text-dim);
   border: 1px solid var(--border-strong);
   transition: color 0.3s var(--ease), border-color 0.3s var(--ease),
@@ -483,48 +468,49 @@ onUnmounted(() => {
 }
 
 .btn-line:hover {
-  color: var(--text);
-  border-color: rgba(167, 139, 250, 0.6);
+  color: var(--accent);
+  border-color: var(--accent);
   transform: translateX(-3px);
 }
 
 /* ====== 评论 ====== */
 .comments {
-  margin-top: 72px;
-  padding-top: 40px;
+  margin-top: 68px;
+  padding-top: 38px;
   border-top: 1px solid var(--border);
   animation: rise 1s var(--ease) 0.24s both;
 }
 
 .comments-title {
-  font-size: 1.15rem;
+  font-family: var(--font-serif);
+  font-size: 1.12rem;
   font-weight: 600;
-  margin-bottom: 24px;
-  color: #f0f2fa;
+  margin-bottom: 22px;
+  color: var(--text-strong);
 }
 
 .count {
   margin-left: 6px;
-  font-size: 0.85rem;
-  color: var(--c2);
+  font-size: 0.82rem;
+  color: var(--accent);
 }
 
 .comment-form {
-  margin-bottom: 34px;
+  margin-bottom: 32px;
 }
 
 .comment-form textarea {
   width: 100%;
-  padding: 16px 18px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.035);
+  padding: 15px 17px;
+  border-radius: 12px;
+  background: var(--bg-soft);
   border: 1px solid var(--border);
   color: var(--text);
   font-family: inherit;
-  font-size: 0.94rem;
+  font-size: 0.93rem;
   line-height: 1.7;
   resize: vertical;
-  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+  transition: border-color 0.3s var(--ease);
   outline: none;
 }
 
@@ -533,8 +519,7 @@ onUnmounted(() => {
 }
 
 .comment-form textarea:focus {
-  border-color: rgba(167, 139, 250, 0.6);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent);
 }
 
 .form-foot {
@@ -546,17 +531,16 @@ onUnmounted(() => {
 .btn-send {
   padding: 10px 26px;
   border-radius: 999px;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 600;
-  color: #0a0b12;
-  background: var(--gradient);
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease),
-    opacity 0.3s var(--ease);
+  color: var(--accent-ink);
+  background: var(--accent);
+  transition: transform 0.3s var(--ease), opacity 0.3s var(--ease);
 }
 
 .btn-send:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 16px 40px -16px rgba(167, 139, 250, 0.8);
+  opacity: 0.92;
 }
 
 .btn-send:disabled {
@@ -565,54 +549,53 @@ onUnmounted(() => {
 }
 
 .login-tip {
-  margin-bottom: 30px;
-  font-size: 0.9rem;
+  margin-bottom: 28px;
+  font-size: 0.88rem;
   color: var(--text-faint);
 }
 
 .login-tip a {
-  color: var(--c1);
+  color: var(--accent);
   cursor: pointer;
-  border-bottom: 1px solid rgba(34, 211, 238, 0.35);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 .comment-list {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .comment-item {
-  padding: 18px 20px;
-  border-radius: 16px;
-  background: var(--surface);
+  padding: 17px 19px;
+  border-radius: 12px;
+  background: var(--bg-soft);
   border: 1px solid var(--border);
-  transition: border-color 0.35s var(--ease), background 0.35s var(--ease);
+  transition: border-color 0.3s var(--ease);
 }
 
 .comment-item:hover {
   border-color: var(--border-strong);
-  background: var(--surface-hover);
 }
 
 .comment-head {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
+  gap: 11px;
+  margin-bottom: 9px;
 }
 
 .avatar {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 700;
-  color: #0a0b12;
-  background: var(--gradient);
+  color: var(--accent-ink);
+  background: var(--accent);
   flex-shrink: 0;
 }
 
@@ -623,18 +606,18 @@ onUnmounted(() => {
 }
 
 .comment-who strong {
-  font-size: 0.86rem;
-  color: #eef0f8;
+  font-size: 0.84rem;
+  color: var(--text-strong);
 }
 
 .comment-who span {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--text-faint);
 }
 
 .btn-del {
   margin-left: auto;
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   color: var(--text-faint);
   padding: 4px 10px;
   border-radius: 999px;
@@ -642,21 +625,21 @@ onUnmounted(() => {
 }
 
 .btn-del:hover {
-  color: #fda4af;
-  background: rgba(244, 114, 182, 0.1);
+  color: #c4453d;
+  background: color-mix(in srgb, #c4453d 10%, transparent);
 }
 
 .comment-content {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   line-height: 1.75;
   color: var(--text-dim);
   word-break: break-word;
 }
 
 .no-comment {
-  padding: 40px 0;
+  padding: 38px 0;
   text-align: center;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   color: var(--text-faint);
 }
 
@@ -669,7 +652,7 @@ onUnmounted(() => {
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(22px);
   }
   to {
     opacity: 1;
@@ -677,8 +660,7 @@ onUnmounted(() => {
   }
 }
 
-/* ====== 响应式 ====== */
-@media (max-width: 1200px) {
+@media (max-width: 1180px) {
   .back-float {
     transform: translateX(-50%) translateX(-380px);
   }
@@ -687,7 +669,7 @@ onUnmounted(() => {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 860px) {
   .back-float {
     left: 20px;
     top: 16px;

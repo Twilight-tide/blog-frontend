@@ -13,11 +13,15 @@
         <component :is="Component" />
       </Transition>
     </RouterView>
+
+    <!-- 主题切换器 -->
+    <ThemeSwitcher />
   </div>
 </template>
 
 <script setup>
 import SplashScreen from "./components/SplashScreen.vue";
+import ThemeSwitcher from "./components/ThemeSwitcher.vue";
 import "./styles/theme.css";
 </script>
 
