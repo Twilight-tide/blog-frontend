@@ -42,6 +42,9 @@ request.interceptors.response.use(
       if (!String(error.config?.url || "").includes("/api/user/me")) {
         ElMessage.error("登录已过期，请重新登录");
       }
+    } else if (error.response?.status === 403) {
+      // 后端业务 403 会带 msg；CORS 拒绝等情况下没有 body，给一句中文兜底
+      ElMessage.error(serverMsg || "没有权限执行该操作");
     } else if (serverMsg) {
       // 后端业务错误（400/404/500）都带 msg，优先展示它
       ElMessage.error(serverMsg);
