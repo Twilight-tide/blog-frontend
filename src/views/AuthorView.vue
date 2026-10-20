@@ -70,6 +70,14 @@
             >
               {{ submitting ? "发布中…" : "发布文章" }}
             </button>
+            <button
+              class="btn-ghost"
+              type="button"
+              :disabled="savingDraft"
+              @click="handleSaveDraft"
+            >
+              {{ savingDraft ? "保存中…" : "存草稿" }}
+            </button>
             <button class="btn-ghost" type="button" @click="resetForm">重置</button>
           </el-form-item>
         </el-form>
@@ -104,9 +112,24 @@
           <el-table-column label="发布时间" width="170">
             <template #default="{ row }">{{ formatDate(row.createTime) }}</template>
           </el-table-column>
-          <el-table-column label="操作" width="150" fixed="right">
+          <el-table-column label="状态" width="90">
+            <template #default="{ row }">
+              <span class="status" :class="row.published ? 'on' : 'off'">
+                {{ row.published ? "已发布" : "草稿" }}
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="200" fixed="right">
             <template #default="{ row }">
               <button class="btn-mini" type="button" @click="openEditDialog(row)">编辑</button>
+              <button
+                v-if="!row.published"
+                class="btn-mini"
+                type="button"
+                @click="handlePublishDraft(row)"
+              >
+                发布
+              </button>
               <button class="btn-mini danger" type="button" @click="handleDelete(row.id)">
                 删除
               </button>
@@ -188,6 +211,8 @@ import {
   getMyArticles,
   updateArticle,
   deleteArticle,
+  saveDraft,
+  publishDraft,
 } from "../api/article";
 import { useAuthStore } from "../store/auth";
 
@@ -197,6 +222,7 @@ const auth = useAuthStore();
 const formRef = ref(null);
 const editFormRef = ref(null);
 const submitting = ref(false);
+const savingDraft = ref(false);
 const editSubmitting = ref(false);
 const tableLoading = ref(false);
 const articles = ref([]);
@@ -212,7 +238,27 @@ const rules = {
 };
 
 const toolbarConfig = {};
-const editorConfig = { placeholder: "请输入文章内容..." };
+const editorConfig = {
+  placeholder: "请输入文章内容...",
+  MENU_CONF: {
+    uploadImage: {
+      server: "/api/upload/image",
+      fieldName: "file",
+      maxFileSize: 5 * 1024 * 1024,
+      allowedFileTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      customInsert(res, insertFn) {
+        if (res.code === 200 && res.data && res.data.url) {
+          insertFn(res.data.url, "", "");
+        } else {
+          ElMessage.error(res.msg || "图片上传失败");
+        }
+      },
+    },
+  },
+};
 const editorRef = ref(null);
 const editEditorRef = ref(null);
 
@@ -248,6 +294,35 @@ const resetForm = () => {
   form.summary = "";
   form.content = "";
   editorRef.value?.clear();
+};
+
+// 存草稿：标题和内容都允许为空，后端会给「未命名草稿」
+const handleSaveDraft = async () => {
+  if (!form.title.trim() && !form.content) {
+    ElMessage.warning("还没有内容，不用存草稿");
+    return;
+  }
+  savingDraft.value = true;
+  try {
+    await saveDraft({ ...form });
+    ElMessage.success("草稿已保存，可在下方列表继续编辑");
+    resetForm();
+    fetchArticles();
+  } catch (error) {
+    ElMessage.error(error.message || "保存草稿失败");
+  } finally {
+    savingDraft.value = false;
+  }
+};
+
+const handlePublishDraft = async (row) => {
+  try {
+    await publishDraft(row.id);
+    ElMessage.success("已发布");
+    fetchArticles();
+  } catch (error) {
+    ElMessage.error(error.message || "发布失败");
+  }
 };
 
 const fetchArticles = async () => {
@@ -575,6 +650,23 @@ onBeforeUnmount(() => {
 .btn-mini.danger:hover {
   color: #c4453d;
   border-color: #c4453d;
+}
+
+.status {
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.status.on {
+  color: #2f7d5d;
+  background: color-mix(in srgb, #2f7d5d 13%, transparent);
+}
+
+.status.off {
+  color: var(--text-faint);
+  background: var(--surface);
 }
 
 :deep(.el-dialog) {

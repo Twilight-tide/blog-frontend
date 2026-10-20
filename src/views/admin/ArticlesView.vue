@@ -137,7 +137,27 @@ const editorRef = ref(null);
 const form = reactive({ title: "", category: "", summary: "", content: "" });
 
 const toolbarConfig = {};
-const editorConfig = { placeholder: "请输入文章内容..." };
+const editorConfig = {
+  placeholder: "请输入文章内容...",
+  MENU_CONF: {
+    uploadImage: {
+      server: "/api/upload/image",
+      fieldName: "file",
+      maxFileSize: 5 * 1024 * 1024,
+      allowedFileTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      customInsert(res, insertFn) {
+        if (res.code === 200 && res.data && res.data.url) {
+          insertFn(res.data.url, "", "");
+        } else {
+          ElMessage.error(res.msg || "图片上传失败");
+        }
+      },
+    },
+  },
+};
 
 const rules = {
   title: [{ required: true, message: "请输入文章标题", trigger: "blur" }],

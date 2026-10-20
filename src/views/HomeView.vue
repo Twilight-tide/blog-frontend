@@ -35,7 +35,7 @@
 
       <div class="hero-stats">
         <div class="stat">
-          <strong>{{ articles.length }}</strong>
+          <strong>{{ total }}</strong>
           <span>篇文章</span>
         </div>
         <div class="stat-divider"></div>
@@ -82,9 +82,9 @@
       </div>
 
       <!-- 列表 -->
-      <div v-else-if="displayArticles.length > 0" class="cards">
+      <div v-else-if="articles.length > 0" class="cards">
         <article
-          v-for="(article, i) in displayArticles"
+          v-for="(article, i) in articles"
           :key="article.id"
           class="card reveal"
           :style="{ '--d': i * 70 + 'ms' }"
@@ -113,16 +113,12 @@
       </div>
 
       <!-- 加载更多 -->
-      <div
-        v-if="!loading && filteredByCategory.length > displayArticles.length"
-        class="more"
-      >
-        <button class="btn-more" @click="loadMore">加载更多</button>
+      <div v-if="!loading && page < pages" class="more">
+        <button class="btn-more" :disabled="loadingMore" @click="loadMore">
+          {{ loadingMore ? "加载中…" : "加载更多" }}
+        </button>
       </div>
-      <div
-        v-else-if="!loading && displayArticles.length > 0"
-        class="list-end"
-      >
+      <div v-else-if="!loading && articles.length > 0" class="list-end">
         — 已经到底了 —
       </div>
     </main>
@@ -138,37 +134,24 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { getArticleList } from "../api/article";
+import { getArticlePage, getCategories } from "../api/article";
 import { useAuthStore } from "../store/auth";
 
 const router = useRouter();
 const auth = useAuthStore();
 const articles = ref([]);
 const loading = ref(true);
+const loadingMore = ref(false);
 const selectedCategory = ref("");
-const pageSize = ref(5);
-const currentPage = ref(1);
+const pageSize = ref(9);
+const page = ref(1);
+const pages = ref(0);
+const total = ref(0);
+const categories = ref([]);
 const scrolled = ref(false);
 const year = new Date().getFullYear();
 
 let observer = null;
-
-const categories = computed(() => {
-  const set = new Set();
-  articles.value.forEach((a) => {
-    if (a.category) set.add(a.category);
-  });
-  return Array.from(set);
-});
-
-const filteredByCategory = computed(() => {
-  if (!selectedCategory.value) return articles.value;
-  return articles.value.filter((a) => a.category === selectedCategory.value);
-});
-
-const displayArticles = computed(() => {
-  return filteredByCategory.value.slice(0, currentPage.value * pageSize.value);
-});
 
 const isLoggedIn = computed(() => auth.isLoggedIn);
 
@@ -185,26 +168,49 @@ const summaryOf = (article) => {
   return text.length > 120 ? text.slice(0, 120) + "…" : text;
 };
 
-const loadMore = () => {
-  currentPage.value++;
-  requestAnimationFrame(observeReveals);
-};
-
-const filterByCategory = (cat) => {
-  selectedCategory.value = cat;
-  currentPage.value = 1;
-  requestAnimationFrame(observeReveals);
-};
-
-const fetchArticles = async () => {
-  try {
+const loadPosts = async (append = false) => {
+  if (append) {
+    loadingMore.value = true;
+  } else {
     loading.value = true;
-    articles.value = await getArticleList();
+  }
+  try {
+    const data = await getArticlePage(
+      page.value,
+      pageSize.value,
+      selectedCategory.value || undefined
+    );
+    articles.value = append ? [...articles.value, ...data.list] : data.list;
+    pages.value = data.pages;
+    total.value = data.total;
   } catch (error) {
     console.error("获取文章列表失败:", error);
   } finally {
     loading.value = false;
+    loadingMore.value = false;
     requestAnimationFrame(observeReveals);
+  }
+};
+
+const loadMore = () => {
+  if (page.value >= pages.value || loadingMore.value) return;
+  page.value++;
+  loadPosts(true);
+};
+
+const filterByCategory = (cat) => {
+  selectedCategory.value = cat;
+  page.value = 1;
+  loadPosts(false);
+};
+
+const fetchArticles = () => loadPosts(false);
+
+const fetchCategories = async () => {
+  try {
+    categories.value = await getCategories();
+  } catch (error) {
+    console.error("获取分类失败:", error);
   }
 };
 
@@ -252,6 +258,7 @@ const observeReveals = () => {
 
 onMounted(() => {
   fetchArticles();
+  fetchCategories();
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
